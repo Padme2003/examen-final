@@ -2,7 +2,7 @@ name: CI/CD Andrade Project
 
 on:
   push:
-    branches: ["andrade"]   # ← requisito del examen: usar tu segundo apellido
+    branches: ["pilataxi"]   # ← requisito del examen: usar tu segundo apellido
 
 permissions:
   contents: read
@@ -64,8 +64,8 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/dkcatotin/andrade:1.0.5
-          ghcr.io/dkcatotin/andrade:latest
+          ghcr.io/padme2003/pilataxi:1.0.5
+          ghcr.io/padme2003/pilataxi:latest
 
     # ---------------------------------------------------------
     # SUBIR stack.yml AL VPS
@@ -78,7 +78,7 @@ jobs:
         username: ${{ secrets.VPS_USER }}
         password: ${{ secrets.VPS_PASSWORD }}
         source: "stack.yml"
-        target: "/home/${{ secrets.VPS_USER }}/andrade-app"
+        target: "/home/${{ secrets.VPS_USER }}/pilataxi-app"
 
     # ---------------------------------------------------------
     # DEPLOY EN DOCKER SWARM
@@ -91,22 +91,22 @@ jobs:
         username: ${{ secrets.VPS_USER }}
         password: ${{ secrets.VPS_PASSWORD }}
         script: |
-          echo "🔄 Iniciando despliegue automático ANDRADE"
+          echo "🔄 Iniciando despliegue automático PILATAXI"
 
-          cd ~/andrade-app
+          cd ~/pilataxi-app
 
           echo "🔐 Login GHCR..."
-          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u dkcatotin --password-stdin
+          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u padme2003 --password-stdin
 
           echo "📥 Pull de imagen..."
-          docker pull ghcr.io/dkcatotin/andrade:latest
+          docker pull ghcr.io/padme2003/pilataxi:latest
 
           echo "🧹 Eliminando stack anterior..."
-          docker stack rm andrade_stack || true
+          docker stack rm pilataxi_stack || true
           sleep 25
 
           echo "🚢 Desplegando nuevo stack..."
-          docker stack deploy --with-registry-auth -c stack.yml andrade_stack
+          docker stack deploy --with-registry-auth -c stack.yml pilataxi_stack
 
           echo "⏳ Esperando servicios..."
           sleep 20

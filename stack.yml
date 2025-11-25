@@ -1,28 +1,28 @@
 version: "3.8"
 
 services:
-  andrade:
-    image: ghcr.io/REPLACE_WITH_OWNER/andrade:1.0.5
+  pilataxi:
+    image: ghcr.io/padme2003/pilataxi:1.0.5
     deploy:
       replicas: 1
       labels:
         - "traefik.enable=true"
 
         # --- REDIRECCIÓN HTTP → HTTPS ---
-        - "traefik.http.routers.andrade.entrypoints=http"
-        - "traefik.http.routers.andrade.rule=Host(`andrade.byronrm.com`)"
-        - "traefik.http.middlewares.andrade-https-redirect.redirectscheme.scheme=https"
-        - "traefik.http.routers.andrade.middlewares=andrade-https-redirect"
+        - "traefik.http.routers.pilataxi.entrypoints=http"
+        - "traefik.http.routers.pilataxi.rule=Host(`pilataxi.byronrm.com`)"
+        - "traefik.http.middlewares.pilataxi-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.pilataxi.middlewares=pilataxi-https-redirect"
 
         # --- ROUTER HTTPS ---
-        - "traefik.http.routers.andrade-secure.entrypoints=https"
-        - "traefik.http.routers.andrade-secure.rule=Host(`andrade.byronrm.com`)"
-        - "traefik.http.routers.andrade-secure.tls=true"
-        - "traefik.http.routers.andrade-secure.tls.certresolver=http"
-        - "traefik.http.routers.andrade-secure.service=andrade"
+        - "traefik.http.routers.pilataxi-secure.entrypoints=https"
+        - "traefik.http.routers.pilataxi-secure.rule=Host(`pilataxi.byronrm.com`)"
+        - "traefik.http.routers.pilataxi-secure.tls=true"
+        - "traefik.http.routers.pilataxi-secure.tls.certresolver=http"
+        - "traefik.http.routers.pilataxi-secure.service=pilataxi"
 
         # Puerto interno real de tu app Flask → 8080
-        - "traefik.http.services.andrade.loadbalancer.server.port=8080"
+        - "traefik.http.services.pilataxi.loadbalancer.server.port=8080"
 
         # Red de Traefik
         - "traefik.docker.network=traefik-public"
