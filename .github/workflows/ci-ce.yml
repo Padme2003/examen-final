@@ -1,4 +1,4 @@
-name: CI/CD Andrade Project
+name: CI/CD Pilataxi Project
 
 on:
   push:
@@ -96,7 +96,7 @@ jobs:
           cd ~/pilataxi-app
 
           echo "🔐 Login GHCR..."
-          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u padme2003 --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
           echo "📥 Pull de imagen..."
           docker pull ghcr.io/padme2003/pilataxi:latest
@@ -113,3 +113,5 @@ jobs:
 
           echo "📌 Contenedores activos:"
           docker ps
+
+          
