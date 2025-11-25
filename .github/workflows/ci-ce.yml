@@ -2,7 +2,7 @@ name: CI/CD Pilataxi Project
 
 on:
   push:
-    branches: ["pilataxi"]   # ← requisito del examen: usar tu segundo apellido
+    branches: ["pilataxi"]
 
 permissions:
   contents: read
@@ -14,15 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # ---------------------------------------------------------
-    # DESCARGAR REPOSITORIO
-    # ---------------------------------------------------------
     - name: 📥 Checkout repo
       uses: actions/checkout@v4
 
-    # ---------------------------------------------------------
-    # CONFIGURAR PYTHON
-    # ---------------------------------------------------------
     - name: 🐍 Setup Python 3.10
       uses: actions/setup-python@v4
       with:
@@ -33,21 +27,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # ---------------------------------------------------------
-    # FIX PARA QUE pytest ENCUENTRE app.py
-    # ---------------------------------------------------------
     - name: 🛠️ Fix Python path
       run: echo "PYTHONPATH=." >> $GITHUB_ENV
 
-    # ---------------------------------------------------------
-    # EJECUTAR TESTS
-    # ---------------------------------------------------------
     - name: 🧪 Run tests
       run: pytest -q
 
-    # ---------------------------------------------------------
-    # LOGIN GHCR
-    # ---------------------------------------------------------
     - name: 🔐 Login to GHCR
       uses: docker/login-action@v3
       with:
@@ -55,21 +40,15 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # ---------------------------------------------------------
-    # BUILD + PUSH DOCKER IMAGE
-    # ---------------------------------------------------------
     - name: 🏗️ Build & Push Docker image
       uses: docker/build-push-action@v6
       with:
         context: .
         push: true
         tags: |
-          ghcr.io/padme2003/pilataxi:1.0.5
-          ghcr.io/padme2003/pilataxi:latest
+          ghcr.io/padme2003/pilataxi-examen:1.0.5
+          ghcr.io/padme2003/pilataxi-examen:latest
 
-    # ---------------------------------------------------------
-    # SUBIR stack.yml AL VPS
-    # ---------------------------------------------------------
     - name: 📤 Upload stack to VPS
       uses: appleboy/scp-action@v1
       with:
@@ -80,9 +59,6 @@ jobs:
         source: "stack.yml"
         target: "/home/${{ secrets.VPS_USER }}/pilataxi-app"
 
-    # ---------------------------------------------------------
-    # DEPLOY EN DOCKER SWARM
-    # ---------------------------------------------------------
     - name: 🚀 Deploy to VPS using Docker Swarm
       uses: appleboy/ssh-action@v1
       with:
@@ -92,26 +68,24 @@ jobs:
         password: ${{ secrets.VPS_PASSWORD }}
         script: |
           echo "🔄 Iniciando despliegue automático PILATAXI"
-
+          
           cd ~/pilataxi-app
-
+          
           echo "🔐 Login GHCR..."
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
+          
           echo "📥 Pull de imagen..."
-          docker pull ghcr.io/padme2003/pilataxi:latest
-
+          docker pull ghcr.io/padme2003/pilataxi-examen:latest
+          
           echo "🧹 Eliminando stack anterior..."
           docker stack rm pilataxi_stack || true
           sleep 25
-
+          
           echo "🚢 Desplegando nuevo stack..."
           docker stack deploy --with-registry-auth -c stack.yml pilataxi_stack
-
+          
           echo "⏳ Esperando servicios..."
           sleep 20
-
+          
           echo "📌 Contenedores activos:"
           docker ps
-
-          

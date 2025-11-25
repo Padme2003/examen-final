@@ -2,31 +2,22 @@ version: "3.8"
 
 services:
   pilataxi:
-    image: ghcr.io/padme2003/pilataxi:1.0.5
+    image: ghcr.io/padme2003/pilataxi-examen:1.0.5
     deploy:
       replicas: 1
       labels:
         - "traefik.enable=true"
-
-        # --- REDIRECCIÓN HTTP → HTTPS ---
         - "traefik.http.routers.pilataxi.entrypoints=http"
         - "traefik.http.routers.pilataxi.rule=Host(`pilataxi.byronrm.com`)"
         - "traefik.http.middlewares.pilataxi-https-redirect.redirectscheme.scheme=https"
         - "traefik.http.routers.pilataxi.middlewares=pilataxi-https-redirect"
-
-        # --- ROUTER HTTPS ---
         - "traefik.http.routers.pilataxi-secure.entrypoints=https"
         - "traefik.http.routers.pilataxi-secure.rule=Host(`pilataxi.byronrm.com`)"
         - "traefik.http.routers.pilataxi-secure.tls=true"
         - "traefik.http.routers.pilataxi-secure.tls.certresolver=http"
         - "traefik.http.routers.pilataxi-secure.service=pilataxi"
-
-        # Puerto interno real de tu app Flask → 8080
         - "traefik.http.services.pilataxi.loadbalancer.server.port=8080"
-
-        # Red de Traefik
         - "traefik.docker.network=traefik-public"
-
     networks:
       - traefik-public
 
