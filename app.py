@@ -19,7 +19,7 @@ HTML = """
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Proyecto Pilataxi con IA</h1>
+        <h1>🚀 EXAMEN 100% PRÁCTICO</h1>
         <p><strong>Estudiante:</strong> Pamela Pilataxi | <strong>Versión:</strong> 1.0.5</p>
         <h2>💬 Chatbot IA</h2>
         <div class="chat-box" id="chat"></div>
